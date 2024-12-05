@@ -1,0 +1,30 @@
+Write-Host "Telemetry Manager by Useful Stuffs"
+Write-Host " "
+$ErrorActionPreference = "Stop"
+[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12
+
+$DownloadURL = 'https://usefulstuffs.github.io/TelemetryManager/TelemetryManager.bat'
+
+try {
+	Write-Host "Downloading..."
+	$response = Invoke-WebRequest -Uri $DownloadURL -UseBasicParsing
+	$rand = [Guid]::NewGuid().Guid
+	$isAdmin = [bool]([Security.Principal.WindowsIdentity]::GetCurrent().Groups -match 'S-1-5-32-544')
+	$FilePath = if ($isAdmin) { "$env:SystemRoot\Temp\UninstallEdge_$rand.cmd" } else { "$env:TEMP\UninstallEdge_$rand.cmd" }
+
+	$ScriptArgs = "$args "
+	$prefix = "@::: $rand `r`n"
+	$content = $prefix + $response
+	Set-Content -Path $FilePath -Value $content
+
+	$env:ComSpec = "$env:SystemRoot\system32\cmd.exe"
+	Write-Host "Running Telemetry Manager... Please interact with the command prompt window if asked for."
+	Start-Process cmd.exe "/c """"$FilePath"" $ScriptArgs""" -Wait
+
+	Write-Host "Clearing temporary files..."
+	$FilePaths = @("$env:TEMP\UninstallEdge*.cmd", "$env:SystemRoot\Temp\UninstallEdge*.cmd", "$env:TEMP\OEgetPriv_UninstallEdge*.vbs")
+	foreach ($FilePath in $FilePaths) { Get-Item $FilePath | Remove-Item }
+}
+catch {
+	Write-Host "Edge Removal failed. Please check your internet connection or privileges in the system."
+}
