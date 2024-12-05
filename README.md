@@ -2,7 +2,9 @@
 To get started with the script, you just need a minimum of Windows 10.
 
 ## Method 1
-```irm https://usefulstuffs.github.io/TelemetryManager/get | iex```
+```
+irm https://usefulstuffs.github.io/TelemetryManager/get | iex
+```
 Paste the code above in a powershell Window and follow the instructions
 
 ## Method 2
