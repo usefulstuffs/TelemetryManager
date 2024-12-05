@@ -10,7 +10,7 @@ try {
 	$response = Invoke-WebRequest -Uri $DownloadURL -UseBasicParsing
 	$rand = [Guid]::NewGuid().Guid
 	$isAdmin = [bool]([Security.Principal.WindowsIdentity]::GetCurrent().Groups -match 'S-1-5-32-544')
-	$FilePath = if ($isAdmin) { "$env:SystemRoot\Temp\UninstallEdge_$rand.cmd" } else { "$env:TEMP\UninstallEdge_$rand.cmd" }
+	$FilePath = if ($isAdmin) { "$env:SystemRoot\Temp\TelemetryManager_$rand.cmd" } else { "$env:TEMP\TelemetryManager_$rand.cmd" }
 
 	$ScriptArgs = "$args "
 	$prefix = "@::: $rand `r`n"
@@ -22,9 +22,9 @@ try {
 	Start-Process cmd.exe "/c """"$FilePath"" $ScriptArgs""" -Wait
 
 	Write-Host "Clearing temporary files..."
-	$FilePaths = @("$env:TEMP\UninstallEdge*.cmd", "$env:SystemRoot\Temp\UninstallEdge*.cmd", "$env:TEMP\OEgetPriv_UninstallEdge*.vbs")
+	$FilePaths = @("$env:TEMP\TelemetryManager*.cmd", "$env:SystemRoot\Temp\TelemetryManager*.cmd", "$env:TEMP\OEgetPriv_TelemetryManager*.vbs")
 	foreach ($FilePath in $FilePaths) { Get-Item $FilePath | Remove-Item }
 }
 catch {
-	Write-Host "Edge Removal failed. Please check your internet connection or privileges in the system."
+	Write-Host "The script failed. Please check your internet connection or privileges in the system."
 }
